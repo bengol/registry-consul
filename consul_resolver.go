@@ -2,6 +2,7 @@ package consul
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/cloudwego/kitex/pkg/discovery"
@@ -14,7 +15,7 @@ type consulHttpResolver struct {
 	consulClient *api.Client
 }
 
-// NewConsulResolver creates a consul based resolver
+// NewConsulResolver creates a consul based resolver.
 func NewConsulResolver(endpoint string) (discovery.Resolver, error) {
 	// Make client config
 	conf := api.DefaultConfig()
@@ -54,8 +55,10 @@ func (r *consulHttpResolver) Resolve(ctx context.Context, desc string) (discover
 		}, err
 	}
 
-	for key, service := range agentServices {
-		log.Printf("%s:%v", key, service.ID)
+	for _, service := range agentServices {
+		address := fmt.Sprintf("%s:%d", service.Address, service.Port)
+		log.Printf("%s:%v", service.ID, address)
+		eps = append(eps, discovery.NewInstance("tcp", address, 10, nil))
 	}
 
 	return discovery.Result{
