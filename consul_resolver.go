@@ -17,9 +17,8 @@ type consulHttpResolver struct {
 // NewConsulResolver creates a consul based resolver
 func NewConsulResolver(consul_agent_address string) (discovery.Resolver, error) {
 	tr := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    30 * time.Second,
-		DisableCompression: true,
+		MaxIdleConns:    10,
+		IdleConnTimeout: 30 * time.Second,
 	}
 
 	return &consulHttpResolver{
