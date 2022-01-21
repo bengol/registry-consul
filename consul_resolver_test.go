@@ -49,12 +49,7 @@ func makeClientWithConfig(t *testing.T) (*api.Client, *testutil.TestServer) {
 	return client, server
 }
 
-func TestAPI_ConsulAgentQueryNormal(t *testing.T) {
-	c, s := makeClient(t)
-	defer s.Stop()
-
-	agent := c.Agent()
-
+func registerDemoServices(t *testing.T, agent *api.Agent) {
 	reg1 := &api.AgentServiceRegistration{
 		Name:    "foo1",
 		Port:    8000,
@@ -80,6 +75,16 @@ func TestAPI_ConsulAgentQueryNormal(t *testing.T) {
 	if err := agent.ServiceRegister(reg2); err != nil {
 		t.Fatalf("err: %v", err)
 	}
+}
+
+func Test_ConsulAgentQueryNormal(t *testing.T) {
+	c, s := makeClient(t)
+	defer s.Stop()
+
+	agent := c.Agent()
+
+	// register some services
+	registerDemoServices(t, agent)
 
 	services, err := agent.Services()
 	if err != nil {
